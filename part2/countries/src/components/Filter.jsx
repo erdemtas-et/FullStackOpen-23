@@ -7,7 +7,6 @@ const handleChange = (e) => {
     console.log(value)
     setFilterValue(value)
 }
-
   return (
     <div>
     <span>find countries</span>

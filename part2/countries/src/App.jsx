@@ -15,11 +15,11 @@ function App() {
     useFetch("https://restcountries.com/v3.1/all")
       .then(data => data.filter(country => country.name.common.toLowerCase().includes(filterValue.toLowerCase())))
       .then(filtered => setCountries(filtered))
-  }, [filterValue])
+  }, [filterValue,setFilterValue])
 
  
 
-  const handleDetails = (country) => selectedCountry === country ? setSelectedCountry(null): setSelectedCountry(country)
+  const handleDetails = (country) => JSON.stringify(selectedCountry) === JSON.stringify(country) ? setSelectedCountry(null): setSelectedCountry(country)
 
   if (!countries) {
     return null
@@ -34,9 +34,9 @@ function App() {
             <ListCountry
               country={country}
               handleDetails={() => handleDetails(country)}
-              label={selectedCountry === country ? "close" : "show"}
+              label={JSON.stringify(selectedCountry) === JSON.stringify(country) ? "close" : "show"}
             />
-            {selectedCountry === country && <Country country={country} />}
+            {JSON.stringify(selectedCountry) === JSON.stringify(country) && <Country country={country} />}
           </div>
         )
       })}
