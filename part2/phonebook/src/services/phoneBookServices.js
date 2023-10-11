@@ -1,17 +1,16 @@
 import axios from "axios";
 
-const baseUrl = "http://localhost:3001/api/persons"
+const baseUrl = "http://localhost:3001/persons"
 
-const getAll = async () => {
+const getAll = () => {
   const request =  axios.get(baseUrl)
-    const response = await request;
-  return response.data;
+    return request.then(response => response.data)
 }
 
-const create = async (newPerson) => {
+
+const create = (newPerson) => {
     const request =  axios.post(baseUrl,newPerson)
-      const response = await request;
-  return response.data;
+      return request.then(response => response.data)
 }
 
 
@@ -20,10 +19,9 @@ const deletePerson = (id) => {
     
 }
 
-const updatePerson = async (id,updatedPerson) => {
+const updatePerson = (id,updatedPerson) => {
     const request = axios.put(`${baseUrl}/${id}`,updatedPerson)
-    const response = await request;
-  return response.data;
+    return request.then(response => response.data)
     
 }
 

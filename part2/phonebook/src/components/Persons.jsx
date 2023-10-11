@@ -1,16 +1,14 @@
-import React from 'react';
-import Person from './Person';
+import React from 'react'
+import Person from './Person'
 
-const Persons = ({ persons, handleDelete }) => {
+const Persons = ({persons, handleDelete}) => {
   return (
     <>
-      {persons.map((person) => (
-        <div key={person.id}>
-        <Person  handleDelete={handleDelete} person={person} />
-        </div>
-      ))}
-      </>
-  );
-};
+    {persons.map(person => {
+   return <Person key={person.id} handleDelete={handleDelete} person={person} />
+    })}
+    </>
+  )
+}
 
-export default Persons;
+export default Persons
