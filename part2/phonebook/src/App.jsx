@@ -1,4 +1,5 @@
 import { useState,useEffect } from "react"
+import { v4 as uuidv4 } from 'uuid';
 import Persons from './components/Persons.jsx'
 import PersonForm from './components/PersonForm.jsx'
 import Filter from "./components/Filter.jsx"
@@ -6,18 +7,15 @@ import Notification from "./components/Notification.jsx"
 import phoneService from "./services/phoneBookServices.js"
 import "./index.css"
 
+
 const App = () => {
-  const [persons, setPersons] = useState(null) 
-
-  const [errorMessage, setErrorMessage] = useState(null)
   
-const [filtered,setFiltered] = useState([])
-
-const [filter,setFilter] = useState('')
-
-const [newName, setNewName] = useState('')
-
-const [newNumber, setNewNumber] = useState("")
+  const [persons, setPersons] = useState([]) 
+  const [errorMessage, setErrorMessage] = useState(null)
+  const [filtered,setFiltered] = useState([])
+  const [filter,setFilter] = useState('')
+  const [newName, setNewName] = useState('')
+  const [newNumber, setNewNumber] = useState("")
 
 useEffect(() => {
   phoneService.getAll()
@@ -41,7 +39,6 @@ const handleFilter = (e) => {
   const {value} = e.target
   setFilter(value)
   setFiltered(persons.filter(person => person.name.toLowerCase().includes(value.toLowerCase())))
-  
 }
 
 const handleDelete = (id) => {
@@ -63,11 +60,12 @@ const handleDelete = (id) => {
     setNewNumber(value)
   }
 
-
+  //submit the form
   const handleSubmit = (e) => {
     e.preventDefault();
-  
+
     const newPerson = {
+      id: uuidv4(),
       name: newName,
       number: newNumber
     }
@@ -76,22 +74,16 @@ const handleDelete = (id) => {
   
     if (existingPerson) {
       if (window.confirm(`${newPerson.name} is already registered. Would you like to update their number?`)) {
-       
         setErrorMessage("You updated: " + newPerson.name)
-
         setTimeout(() => {
           setErrorMessage(null)
         },5000)
 
-       
-       
         phoneService.updatePerson(existingPerson.id, newPerson)
           .then(updatedPerson => {
             setPersons(persons.map(person => person.id !== updatedPerson.id ? person : updatedPerson));
             setNewName("");
             setNewNumber("");
-
-
           })
           .catch(error => {
             setErrorMessage(newPerson.name + "is already removed from server")
@@ -101,7 +93,9 @@ const handleDelete = (id) => {
         },3000)
           });
       }
-    } else {
+    } 
+    
+    else {
 
       setErrorMessage("You added: " + newPerson.name)
 
@@ -111,7 +105,11 @@ const handleDelete = (id) => {
 
       phoneService.create(newPerson)
         .then(newContact => {
-          setPersons(persons.concat(newContact));
+          setPersons(prev => {
+            console.log(newContact)
+            return [...prev,newPerson]
+          });
+          
           setNewName("");
           setNewNumber("");
         })
@@ -130,20 +128,26 @@ const handleDelete = (id) => {
     <div>
       <h2>Phonebook</h2>
       <Notification error={errorMessage} />
-     <Filter filter={filter} handleFilter={handleFilter}/>
-      
+      <Filter filter={filter} handleFilter={handleFilter} />
 
-    <h2>add a new</h2>
-   <PersonForm handleNameChange={handleNameChange} handleNumberChange={handleNumberChange} handleSubmit={handleSubmit}
-   newName={newName} newNumber={newNumber}
-   />
+      <h2>add a new</h2>
+      <PersonForm
+        handleNameChange={handleNameChange}
+        handleNumberChange={handleNumberChange}
+        handleSubmit={handleSubmit}
+        newName={newName}
+        newNumber={newNumber}
+      />
 
       <h2>Numbers</h2>
-      
-      {filter === "" ? <Persons persons={persons} handleDelete={handleDelete}/>
-       : <Persons persons={filtered} handleDelete={handleDelete}/>}
+
+      {filter === "" ? (
+        <Persons persons={persons} handleDelete={handleDelete} />
+      ) : (
+        <Persons persons={filtered} handleDelete={handleDelete} />
+      )}
     </div>
-  )
+  );
 }
 
 export default App
